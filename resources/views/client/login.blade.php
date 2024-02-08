@@ -3,8 +3,16 @@
     {{ trans('general.login') }}
 @endsection
 
-@section('content')
+
+{{--<div class="dropdown">--}}
+{{--    <button class=""--}}
+{{--</div>--}}
+{{--<div class="text-right">--}}
+{{--<a href="{{ url('admin') }}" class="btn btn primary " style="color: white">Switch to Admin Login<a class="icon-arrow-right14" style="color: white; margin-right: 10px"></a> </a>--}}
+{{--</div>--}}
+    @section('content')
     <div class="panel panel-body login-form">
+
         @if(Session::has('flash_notification.message'))
             <script>toastr.{{ Session::get('flash_notification.level') }}('{{ Session::get("flash_notification.message") }}', 'Response Status')</script>
         @endif
@@ -79,6 +87,10 @@
                 <button type="submit" class="btn bg-pink-400 btn-block">{{ trans('general.login') }} <i
                             class="icon-arrow-right14 position-right"></i></button>
             </div>
+                <div class="form-group">
+                    <a href="{{ url('admin') }}" class="btn bg-pink-400 btn-block">Switch to Admin<i
+                                class="icon-arrow-right14 position-right"></i></a>
+                </div>
             {!! Form::close() !!}
             @if(\App\Models\Setting::where('setting_key','allow_self_registration')->first()->setting_value==1)
                 <div class="content-divider text-muted form-group">

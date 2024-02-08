@@ -3,10 +3,14 @@
     {{trans_choice('general.app_name',1)}} | {{trans_choice('general.login',1)}}
 @endsection
 <div class="container" style="background-image: url({{asset('assets/dist/img/logo.png')}}); width: 100%; height: 100%; background-size: cover; -moz-background-size: cover; -webkit-background-size: cover; -o-background-size: cover;">
-@section('content')
+{{--    <div class="text-right">--}}
+{{--        <a href="{{ url('client') }}" class="btn btn primary " style="color: white">Switch to Client Login<a class="icon-arrow-right14" style="color: white; margin-right: 10px"></a> </a>--}}
+{{--    </div>--}}
+    @section('content')
 
  <!---{{ trans('general.login') }}--->
     <div class="panel panel-body login-form">
+
         @if(Session::has('flash_notification.message'))
             <script>toastr.{{ Session::get('flash_notification.level') }}('{{ Session::get("flash_notification.message") }}', 'Response Status')</script>
         @endif
@@ -32,7 +36,7 @@
             </div>
         @endif
          <!---<div class="text-center">
-           <div class="icon-object border-slate-300 text-slate-300"><i class="icon-reading"></i></div> 
+           <div class="icon-object border-slate-300 text-slate-300"><i class="icon-reading"></i></div>
         </div>--->
         {!! Form::open(array('url' => url('login'), 'method' => 'post', 'name' => 'form','class'=>'f-login-form')) !!}
         <div class="text-center">
@@ -41,6 +45,15 @@
             <h5 class="content-group"><p class="login-box-msg">{{ trans('general.sign_in') }}</p>
             </h5>
         </div>
+{{--          <div class="">--}}
+{{--            <div class="text-center">--}}
+{{--                <label for="role"> Select role:</label>--}}
+{{--                <select id="role" name="role">--}}
+{{--                    <option value="client"><a href="client_login.blade.php">Client</a></option>--}}
+{{--                    <option value="admin"><a href="admin_login.blade.php">Admin</a></option>--}}
+{{--                </select>--}}
+{{--            </div>--}}
+{{--          </div>--}}
         <div class="form-group has-feedback has-feedback-left">
             {!! Form::email('email', null, array('class' => 'form-control', 'placeholder'=>trans_choice("Username",1),'required'=>'required')) !!}
             <div class="form-control-feedback">
@@ -72,6 +85,11 @@
             <button style="background-color: #4CAF50;" type="submit" class="btn btn-primary btn-block">{{ trans('general.login') }}</button>
         </center>
         </div>
+            <div class="form-group">
+                <center>
+                    <a href="{{ url('client') }}" style="background-color: #4CAF50;" class="btn btn-primary btn-block">Switch to Member</a>
+                </center>
+            </div>
         {!! Form::close() !!}
         {!! Form::open(array('url' => url('reset'), 'method' => 'post', 'name' => 'form','class'=>'f-forget-form ')) !!}
         <p class="login-box-msg">{{ trans('general.forgot_password_msg') }}</p>
@@ -95,11 +113,11 @@
             </div>
             <!-- /.col -->
         </div>
-        
+
         {!! Form::close() !!}
     </div>
-  </div> 
-  
+  </div>
+
 
     <script>
         $(document).ready(function () {

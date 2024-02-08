@@ -6,7 +6,7 @@
     <div style="display: none;" class="panel panel-white">
         <div style="display: none;" class="panel-heading">
             <h6 class="panel-title">
-                {{trans_choice('general.report',1)}} {{trans_choice('general.general',2)}} 
+                {{trans_choice('general.report',1)}} {{trans_choice('general.general',2)}}
                 @if(!empty($end_date))
                     for period: <b>{{$start_date}} to {{$end_date}}</b>
                 @endif
@@ -28,6 +28,7 @@
                     {!! Form::text('end_date',$end_date, array('class' => 'form-control date-picker', 'placeholder'=>"",'required'=>'required')) !!}
                 </div>
             </div>
+
             <div class="panel-body">
                 <div class="row">
                     <div class="col-xs-12">
@@ -72,9 +73,10 @@
 
     </div>
     <!-- /.box -->
-   
-   
+
+
     <div class="row">
+
         <div class="col-md-6">
             <div class="panel panel-white">
                 <div class="panel-heading">
@@ -85,12 +87,24 @@
                     </div>
                 </div>
                 <div class="panel-body  no-padding">
-                    <div id="loan_product_data" class="chart" style="height: 320px;">
+                    <div class="panel-body">
+                        <p>
+                            In the pie chart below, we illustrate the current loan distribution as of <?php echo date('F Y'); ?>. The breakdown is as follows:
+                        </p>
                     </div>
+
+                    <div id="loan_product_data" class="chart" style="height: 724px;">
+
+                    </div>
+                    <div class="panel-body">
+                        <p class="text-justify">{{ $description4 ?? 'No description available' }}</p>
+                    </div>
+
                 </div>
             </div>
 
         </div>
+
         {{--<div class="col-md-6">
             <div class="panel panel-white">
                 <div class="panel-heading">
@@ -120,11 +134,18 @@
                 </div>
                 <div class="panel-body  no-padding">
                     <div id="monthly_borrower_data" class="chart" style="height: 320px;">
+
+                    </div>
+                    <div class="panel-body">
+                        <p class="text-justify">{{ $description ?? 'No description available' }}</p>
+
+
                     </div>
                 </div>
             </div>
 
         </div>
+
         <div class="col-md-6">
             <div class="panel panel-white">
                 <div class="panel-heading">
@@ -137,6 +158,30 @@
                 <div class="panel-body  no-padding">
                     <div id="monthly_actual_expected_data" class="chart" style="height: 320px;">
                     </div>
+                    <div class="panel-body">
+                        <p class="text-justify">{{ $description1 ?? 'No description available' }}</p>
+{{--                        <p>--}}
+{{--                            The graph below illustrates a comparison between Payments Received and Expected Payments over time:--}}
+{{--                        </p>--}}
+
+{{--                        <!-- Insert your graph here, using the description provided -->--}}
+
+{{--                        <p>--}}
+{{--                            The horizontal axis represents time intervals (e.g., months, quarters, or years), while the vertical axis depicts the monetary values. Two lines are plotted on the graph:--}}
+{{--                        </p>--}}
+
+{{--                        <ul>--}}
+{{--                            <li><strong>Payments Received: {{ $description1 }}</strong><br>--}}
+
+{{--                            </li>--}}
+{{--                            <li><strong>Expected Payments: {{ $description2 }}</strong><br>--}}
+
+{{--                            </li>--}}
+{{--                        </ul>--}}
+
+
+                    </div>
+
                 </div>
             </div>
 
@@ -155,15 +200,32 @@
                 <div class="panel-body  no-padding">
                     <div id="monthly_disbursed_loans_data" class="chart" style="height: 420px;">
                     </div>
+
                 </div>
             </div>
 
         </div>
     </div>
-    
-    
-    
-    
+
+
+{{--        <div class="panel-body">--}}
+{{--            <p>--}}
+{{--                In the pie chart below, we illustrate the current loan distribution as of {{ date('F Y') }}. The breakdown is as follows:--}}
+{{--            </p>--}}
+{{--            <ul>--}}
+{{--                <li>Educational Loan: {{ $loan_distribution['educational'] }}%</li>--}}
+{{--                <li>Emergency Loan: {{ $loan_distribution['emergency'] }}%</li>--}}
+{{--                <li>PEI Loan: {{ $loan_distribution['pei'] }}%</li>--}}
+{{--                <li>Bonus Loan: {{ $loan_distribution['bonus'] }}%</li>--}}
+{{--                <li>Regular Loan: {{ $loan_distribution['regular'] }}%</li>--}}
+{{--                <li>Gadget Loan: {{ $loan_distribution['gadget'] }}%</li>--}}
+{{--            </ul>--}}
+{{--            <p>--}}
+{{--                This breakdown emphasizes the predominant influence of emergency loans and the specific allocation of educational--}}
+{{--                loans within the broader financial landscape.--}}
+{{--            </p>--}}
+{{--        </div>--}}
+
     <script>
         $(document).ready(function () {
             $("body").addClass('sidebar-xs');
@@ -180,6 +242,7 @@
     <script src="{{ asset('assets/plugins/amcharts/plugins/export/export.min.js') }}"
             type="text/javascript"></script>
     <script>
+
         var chart = AmCharts.makeChart("loan_product_data", {
             "type": "pie",
             "theme": "light",
@@ -298,7 +361,11 @@
                 "libs": {
                     "path": "{{asset('assets/plugins/amcharts/plugins/export/libs')}}/"
                 }
-            }
+            }, "legend": {
+            "position": "bottom",
+                "marginRight": 100,
+                "autoMargins": false
+        },
 
         });
         AmCharts.makeChart("monthly_actual_expected_data", {

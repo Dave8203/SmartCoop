@@ -137,7 +137,7 @@ return [
     'portfolio_overview' => 'Portfolio overview',
     'distribution_by_type_of_loan' => 'Distribution by type of Loans',
     'summary_income_vs_expenses' => 'Summary of income vs expenses',
-    'customer_registration_summary_by_month' => 'Customer registration summary by month',
+    'customer_registration_summary_by_month' => 'Borrower registration summary by month',
     'summary_payment_received_vs_expected_payment' => 'Summary Payments received vs. Expected payments',
     'capital_disbursed_per_month' => 'Capital Disbursed per Month',
     'indicate_revision_date' => 'Indicate the revision date',

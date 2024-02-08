@@ -39,7 +39,7 @@ function updateCron() {
   $last_date_format = date_format(date_add(date_create($last_update_date), date_interval_create_from_date_string('0 days')),
   'Y-m-d');
   if ($last_date_format >= date("Y-m-d")) {
-    echo 'Already cron job done';
+//    echo 'Already cron job done';
   } else {
   
     if (Setting::where('setting_key', 'enable_cron')->first()->setting_value == 0) {

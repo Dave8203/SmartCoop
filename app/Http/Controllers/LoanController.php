@@ -64,11 +64,11 @@ class LoanController extends Controller
             Flash::warning(trans('general.permission_denied'));
             return redirect('/');
         }
-        
+
         if (empty($request->status)) {
             $data = Loan::where('branch_id', session('branch_id'))->get();
         } else {
-           
+
             $data = Loan::where('branch_id', session('branch_id'))->where('status', $request->status)->get();
         }
 
@@ -260,7 +260,7 @@ class LoanController extends Controller
             $loan->first_payment_date = $request->first_payment_date;
         }
         $loan->description = $request->description;
-        
+
         if(isset($request->includes_sun)) {
             $loan->includes_sun = 1;
         } else {
@@ -271,7 +271,7 @@ class LoanController extends Controller
         } else {
             $loan->includes_sat = 0;
         }
-        
+
         $files = array();
         if (!empty($request->file('files'))) {
             $count = 0;
@@ -349,7 +349,7 @@ class LoanController extends Controller
             $loan->maturity_date = date_format(date_add(date_create($request->first_payment_date),
                 date_interval_create_from_date_string($period . ' months')),
                 'Y-m-d');
-        }        
+        }
         if ($loan->repayment_cycle == 'bi_monthly') {
             $repayment_cycle = 'week';
             $loan->maturity_date = date_format(date_add(date_create($request->first_payment_date),
@@ -398,7 +398,7 @@ class LoanController extends Controller
         foreach (LoanGuarantor::where('loan_id', $loan->id)->get() as $key) {
             $guarantors = array_except($guarantors, $key->id);
         }
-        
+
         $schedules = LoanSchedule::where('loan_id', $loan->id)->orderBy('due_date', 'asc')->get();
         $custom_fields = CustomFieldMeta::where('category', 'loans')->where('parent_id', $loan->id)->get();
         // echo $schedules;exit;
@@ -455,7 +455,7 @@ class LoanController extends Controller
         $interest_rate = GeneralHelper::determine_interest_rate($loan->id);
         $period = GeneralHelper::loan_period($loan->id);
         $loan = Loan::find($loan->id);
-        
+
         if ($loan->repayment_cycle == 'daily') {
             $repayment_cycle = '1 days';
             $repayment_type = 'days';
@@ -467,7 +467,7 @@ class LoanController extends Controller
         if ($loan->repayment_cycle == 'quincen') {
             $repayment_cycle = 'month';
             $repayment_type = 'months';
-        }        
+        }
         if ($loan->repayment_cycle == 'monthly') {
             $repayment_cycle = 'month';
             $repayment_type = 'months';
@@ -528,9 +528,9 @@ class LoanController extends Controller
 
             $timestamp = strtotime($next_payment);
             $day = date('l', $timestamp);
-            
+
             if (strpos($day, 'Saturday') !== false) {
-                if ($loan->includes_sat == 0) {                                     
+                if ($loan->includes_sat == 0) {
                     $save_date = date_format(date_add(date_create($next_payment),
                     date_interval_create_from_date_string('2 days')),
                     'Y-m-d');
@@ -539,7 +539,7 @@ class LoanController extends Controller
                 }
             } else if (strpos($day, 'Sunday') !== false) {
                 if ($loan->includes_sun == 0 && $loan->includes_sat == 0) {
-                    $move_days = 1;                 
+                    $move_days = 1;
                     $save_date = date_format(date_add(date_create($next_payment),
                     date_interval_create_from_date_string('2 days')),
                     'Y-m-d');
@@ -548,7 +548,7 @@ class LoanController extends Controller
                     'Y-m-d');
                 }
                 else if ($loan->includes_sun == 0 && $loan->includes_sat == 1) {
-                    $move_days = 1;                
+                    $move_days = 1;
                     $save_date = date_format(date_add(date_create($next_payment),
                     date_interval_create_from_date_string('1 days')),
                     'Y-m-d');
@@ -559,7 +559,7 @@ class LoanController extends Controller
                 }
                 else {
                     $save_date = $next_payment;
-                }               
+                }
             } else {
                 $save_date = date_format(date_add(date_create($next_payment),
                     date_interval_create_from_date_string($move_days.' days')),
@@ -1116,13 +1116,13 @@ class LoanController extends Controller
             $loan_schedule->loan_id = $loan->id;
             $loan_schedule->branch_id = session('branch_id');
             $loan_schedule->borrower_id = $loan->borrower_id;
-            $loan_schedule->description = trans_choice('general.repayment', 1);            
-            
+            $loan_schedule->description = trans_choice('general.repayment', 1);
+
             $timestamp = strtotime($next_payment);
             $day = date('l', $timestamp);
-            
+
             if (strpos($day, 'Saturday') !== false) {
-                if ($loan->includes_sat == 0) {                                     
+                if ($loan->includes_sat == 0) {
                     $save_date = date_format(date_add(date_create($next_payment),
                     date_interval_create_from_date_string('2 days')),
                     'Y-m-d');
@@ -1131,7 +1131,7 @@ class LoanController extends Controller
                 }
             } else if (strpos($day, 'Sunday') !== false) {
                 if ($loan->includes_sun == 0 && $loan->includes_sat == 0) {
-                    $move_days = 2;                 
+                    $move_days = 2;
                     $save_date = date_format(date_add(date_create($next_payment),
                     date_interval_create_from_date_string('2 days')),
                     'Y-m-d');
@@ -1140,10 +1140,10 @@ class LoanController extends Controller
                     'Y-m-d');
                 }
                 else if ($loan->includes_sun == 0 && $loan->includes_sat == 1) {
-                    $move_days = 1;                
+                    $move_days = 1;
                     $save_date = date_format(date_add(date_create($next_payment),
                     date_interval_create_from_date_string('1 days')),
-                    'Y-m-d');                    
+                    'Y-m-d');
                 }
                 else if ($loan->includes_sun == 1 && $loan->includes_sat == 0) {
                     $move_days = 1;
@@ -1813,7 +1813,7 @@ class LoanController extends Controller
             $loan->first_payment_date = $request->first_payment_date;
         }
 
-        $loan->description = $request->description;        
+        $loan->description = $request->description;
 
         if(isset($request->includes_sun)) {
             $loan->includes_sun = 1;
@@ -2116,14 +2116,20 @@ class LoanController extends Controller
             return redirect('/');
         }
 
-        
+
         $validar_status = "closed";
-        
+
         if ($validar_status === $loan->status) {
-          Flash::warning("No se aceptan pagos a prestamos con estatus cerrado");
+          Flash::warning("Payments are not accepted for loans with closed status.");
             return redirect()->back()->withInput();
 
        }
+
+        $balance = GeneralHelper::loan_total_balance($loan->id);
+        if ($request->amount > $balance) {
+            Flash::warning("Repayment amount cannot exceed the remaining loan balance.");
+            return redirect()->back()->withInput();
+        }
 
 
         if ($request->collection_date > date("Y-m-d")) {
@@ -2344,7 +2350,7 @@ class LoanController extends Controller
         event(new RepaymentCreated($loan_transaction));
         // **********************************************
         GeneralHelper::audit_trail("Payment applied to loan ID:" . $loan->id);
-        Flash::success("Pago procesado con éxito");
+        Flash::success("Payment processed successfully");
         return redirect('loan/' . $loan->id . '/show');
 
     }
@@ -2441,7 +2447,7 @@ class LoanController extends Controller
             return redirect()->back()->withInput();
 
         }
-    
+
         $loan_transaction->reversible = 0;
         $loan_transaction->reversed = 1;
         $loan_transaction->reversal_type = "user";
@@ -2714,7 +2720,7 @@ class LoanController extends Controller
         if ($request->submit == 'submit') {
             //lets delete existing schedules
             LoanSchedule::where('loan_id', $loan->id)->delete();
-            
+
             for ($count = 0; $count < $request->count; $count++) {
                 $schedule = new LoanSchedule();
                 if (empty($request->due_date) && empty($request->principal) && empty($request->interest) && empty($request->fees) && empty($request->penalty)) {
@@ -2723,9 +2729,9 @@ class LoanController extends Controller
                     //do nothing
                 } else {
                     // all rosy, lets save our data here
-                    
+
                     $due_dates = $request->due_date[$count];
-                    
+
                     $schedule->due_date = $due_dates;
                     $schedule->principal = $request->principal[$count];
                     $schedule->description = $request->description[$count];
@@ -3151,7 +3157,7 @@ class LoanController extends Controller
             $loan->first_payment_date = $request->first_payment_date;
         }
         $loan->description = $request->description;
-        
+
         if(isset($request->includes_sun)) {
             $loan->includes_sun = 1;
         } else {

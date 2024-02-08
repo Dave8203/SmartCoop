@@ -1,3 +1,5 @@
+<a href="{{ url('client') }}" class="btn btn primary">Switch to Client Login</a>
+
 @extends('client.auth')
 @section('title')
     {{ trans('login.login') }}
@@ -89,6 +91,7 @@
                                     </label>
                                 </div>
                             </div>
+
                             <!-- /.col -->
                             <div class="col-xs-4">
                                 <button type="submit"

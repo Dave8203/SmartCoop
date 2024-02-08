@@ -115,11 +115,11 @@ class ReportController extends Controller
             compact('data', 'start_date',
                 'end_date'));
     }
-    
-    
-    
-    
-    
+
+
+
+
+
      public function loan_list(Request $request)
     {
         if (!Sentinel::hasAccess('reports')) {
@@ -136,11 +136,11 @@ class ReportController extends Controller
             compact('data', 'start_date',
                 'end_date'));
     }
-    
-    
-    
-    
-    
+
+
+
+
+
 
     public function loan_product(Request $request)
     {
@@ -848,11 +848,11 @@ class ReportController extends Controller
         }
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        
+
         $expect_report = [];
         $users_rang = [];
         $routes_rang = [];
-        
+
         foreach (\App\Models\LoanTransaction::where('transaction_type', 'repayment')->where('reversed', 0)->whereBetween('date',
         [$start_date, $end_date])->orderBy('user_id')->get() as $key) {
             if (!in_array($key->user_id, $users_rang)) {
@@ -864,7 +864,7 @@ class ReportController extends Controller
             if (!in_array($route->id, $routes_rang)) {
                 array_push($routes_rang, $route->id);
             }
-        }        
+        }
 
         foreach ($users_rang as $uuu => $user_id) {
             $user = \App\Models\User::where('id', $user_id)->first();
@@ -874,7 +874,7 @@ class ReportController extends Controller
                 $loan_id_rang = [];
                 foreach (\App\Models\Loan::where('loan_product_id', $router)->get() as $lloan) {
                     array_push($loan_id_rang, $lloan->id);
-                }                
+                }
                 $route = \App\Models\LoanProduct::where('id', $router)->first();
 
                 $principal_total_data = 0;
@@ -895,13 +895,13 @@ class ReportController extends Controller
                     $penalty = \App\Models\JournalEntry::where('loan_transaction_id', $key->id)->where('reversed',0)->where('name', "Penalty Repayment")->sum('credit');
 
                     $total = \App\Models\LoanTransaction::where('id', $key->id)->where('reversed', 0)->where('transaction_type', "repayment")->sum('credit');
-                    
+
                     $principal_total_data = $principal_total_data + $principal;
                     $interest_total_data = $interest_total_data + $interest;
                     $fees_total_data = $fees_total_data + $fees;
                     $penalty_total_data = $penalty_total_data + $penalty;
                     $total_total_data = $total_total_data + $total;
-                    
+
                     $pay_count = $pay_count + 1;
                 }
 
@@ -2286,7 +2286,7 @@ class ReportController extends Controller
             $end_date = $request->end_date;
         } else {
             $end_date = '';
-        }        
+        }
 
         return view('borrower_report.borrower_numbers',
             compact('start_date',
@@ -3233,7 +3233,7 @@ class ReportController extends Controller
     public function general_report(Request $request)
     {
         if (!Sentinel::hasAccess('reports')) {
-            Flash::warning("Permiso Denegado");
+            Flash::warning("Permission Denied");
             return redirect('/');
         }
         $start_date = $request->start_date;
@@ -3243,25 +3243,69 @@ class ReportController extends Controller
         } else {
             $date = date("Y-m-d");
         }
-        //loan product pie data
+
+
+        // Loan Product Pie Data
         $loan_product_data = [];
+        $max_loan_product = null;
+        $second_max_loan_product = null;
+        $min_loan_product = null;
+        $max_count = 0;
+        $second_max_count = 0;
+        $min_count = PHP_INT_MAX; // Initialize to a large value to ensure any count is smaller
+        $total_customers = 0;
+
+// Loop through each loan product to gather data
         foreach (LoanProduct::all() as $key) {
+            // Count the number of loans based on the specified conditions
             if (empty($start_date)) {
-                $count = Loan::where('loan_product_id', $key->id)->where('branch_id',
-                    session('branch_id'))->whereIn('status',
-                    ['disbursed', 'closed', 'written_off', 'rescheduled'])->count();
+                $count = Loan::where('loan_product_id', $key->id)
+                    ->where('branch_id', session('branch_id'))
+                    ->whereIn('status', ['disbursed', 'closed', 'written_off', 'rescheduled'])
+                    ->count();
             } else {
-                $count = Loan::where('loan_product_id', $key->id)->where('branch_id',
-                    session('branch_id'))->whereIn('status',
-                    ['disbursed', 'closed', 'written_off', 'rescheduled'])->whereBetween('release_date',
-                    [$start_date, $end_date])->count();
+                $count = Loan::where('loan_product_id', $key->id)
+                    ->where('branch_id', session('branch_id'))
+                    ->whereIn('status', ['disbursed', 'closed', 'written_off', 'rescheduled'])
+                    ->whereBetween('release_date', [$start_date, $end_date])
+                    ->count();
             }
-            array_push($loan_product_data, array(
+
+            // Increment total customers
+            $total_customers += $count;
+
+            // Store loan product data in an array
+            array_push($loan_product_data, [
                 'product' => $key->name,
                 'value' => $count
+            ]);
 
-            ));
+            // Check if the current loan product has a higher count
+            if ($count > $max_count) {
+                $second_max_loan_product = $max_loan_product;
+                $second_max_count = $max_count;
+                $max_count = $count;
+                $max_loan_product = $key->name;
+            } elseif ($count > $second_max_count) {
+                $second_max_count = $count;
+                $second_max_loan_product = $key->name;
+            }
+
+            // Check if the current loan product has a lower count
+            if ($count < $min_count) {
+                $min_count = $count;
+                $min_loan_product = $key->name;
+            }
         }
+
+// Description below the graph with percentage
+        $description4 = "Among the loan products, $max_loan_product stands out as the most availed, with $max_count loan(s), representing " . number_format(($max_count / $total_customers) * 100, 2) . "% of borrower(s). Following closely is $second_max_loan_product, representing the second-highest number of loans at $second_max_count, accounting for " . number_format(($second_max_count / $total_customers) * 100, 2) . "% of borrower(s). On the other hand, $min_loan_product has the lowest loan uptake, with $min_count loan(s), constituting " . number_format(($min_count / $total_customers) * 100, 2) . "% of borrower(s). Understanding these patterns can provide insights into the popularity and utilization of different loan products.";
+
+// Now you can use the $description4 variable wherever you want to display this information.
+
+
+
+
         $monthly_net_income_data = array();
         $loop_date = date_format(date_sub(date_create($date),
             date_interval_create_from_date_string('1 years')),
@@ -3307,27 +3351,84 @@ class ReportController extends Controller
                 'Y-m-d');
         }
         //user registrations
+//        $monthly_borrower_data = [];
+//        $loop_date = date_format(date_sub(date_create($date),
+//            date_interval_create_from_date_string('1 years')),
+//            'Y-m-d');
+//
+//        for ($i = 1; $i < 14; $i++) {
+//            $d = explode('-', $loop_date);
+//            //get loans in that period
+//            $count = Borrower::where('year',
+//                $d[0])->where('month',
+//                $d[1])->where('branch_id',
+//                session('branch_id'))->count();
+//            array_push($monthly_borrower_data, array(
+//                'month' => date_format(date_create($loop_date),
+//                    'M' . ' ' . $d[0]),
+//                'value' => $count,
+//            ));
+//            //add 1 month to start date
+//            $loop_date = date_format(date_add(date_create($loop_date),
+//                date_interval_create_from_date_string('1 months')),
+//                'Y-m-d');
+//        }
+
+
+
         $monthly_borrower_data = [];
         $loop_date = date_format(date_sub(date_create($date),
             date_interval_create_from_date_string('1 years')),
             'Y-m-d');
-        for ($i = 1; $i < 14; $i++) {
+
+        $previous_3_months_counts = [];
+
+// Calculate borrower counts for the past 13 months
+        for ($i = 1; $i < 13; $i++) {
             $d = explode('-', $loop_date);
-            //get loans in that period
-            $count = Borrower::where('year',
-                $d[0])->where('month',
-                $d[1])->where('branch_id',
-                session('branch_id'))->count();
-            array_push($monthly_borrower_data, array(
-                'month' => date_format(date_create($loop_date),
-                    'M' . ' ' . $d[0]),
+            $count = Borrower::where('year', $d[0])
+                ->where('month', $d[1])
+                ->where('branch_id', session('branch_id'))
+                ->count();
+
+            array_push($monthly_borrower_data, [
+                'month' => date_format(date_create($loop_date), 'M Y'),
                 'value' => $count,
-            ));
-            //add 1 month to start date
-            $loop_date = date_format(date_add(date_create($loop_date),
-                date_interval_create_from_date_string('1 months')),
-                'Y-m-d');
+            ]);
+
+            // Keep track of counts for the past 3 months
+            if ($i > 9 && $i <= 12) {
+                $previous_3_months_counts[] = $count;
+            }
+
+            $loop_date = date_format(date_add(date_create($loop_date), date_interval_create_from_date_string('1 months')), 'Y-m-d');
         }
+
+        $current_month = date('Y-m');
+        $current_month_count = Borrower::where('year', date('Y'))
+            ->where('month', date('m'))
+            ->where('branch_id', session('branch_id'))
+            ->count();
+
+        array_push($monthly_borrower_data, [
+            'month' => date_format(date_create($current_month), 'M Y'),
+            'value' => $current_month_count,
+        ]);
+
+// Calculate average count for the previous 3 months
+        $average_previous_3_months = count($previous_3_months_counts) > 0 ? array_sum($previous_3_months_counts) / count($previous_3_months_counts) : 0;
+
+// Generating description
+        $current_month_name = date_format(date_create($current_month), 'M Y');
+        $description = "The following data visualization illustrates the monthly trend of borrower registrations over the past 13 months, showcasing the dynamic patterns in user engagement. In the current month of $current_month_name, $current_month_count individuals have registered as borrowers, reflecting the ongoing growth of your community. This figure is thoughtfully compared to the average of $average_previous_3_months borrowers in the preceding 3 months, providing valuable insights into the evolving trends and user acquisition dynamics. This analysis not only highlights the present vibrancy in borrower registrations but also aids in understanding the broader context of your platform's user engagement over time.";
+
+// Now $description contains the text describing the graph with the corrected comparison and without double quotes
+
+
+
+
+
+
         $monthly_repayments_data = [];
         $loop_date = date_format(date_sub(date_create($date),
             date_interval_create_from_date_string('1 years')),
@@ -3350,64 +3451,115 @@ class ReportController extends Controller
                 date_interval_create_from_date_string('1 months')),
                 'Y-m-d');
         }
+
+
+
+
         $monthly_actual_expected_data = [];
         $monthly_disbursed_loans_data = [];
         $loop_date = date_format(date_sub(date_create($date),
             date_interval_create_from_date_string('1 years')),
             'Y-m-d');
+        $current_month = date('Y-m');
+        $payments_received_current_month = 0;
+        $expected_payments_current_month = 0;
+
         for ($i = 1; $i < 14; $i++) {
             $d = explode('-', $loop_date);
             $actual = 0;
             $expected = 0;
             $principal = 0;
-            $actual = $actual + LoanTransaction::where('transaction_type',
-                    'repayment')->where('reversed', 0)->where('year',
-                    $d[0])->where('month',
-                    $d[1])->where('branch_id',
-                    session('branch_id'))->sum('credit');
+
+            // Calculate actual payments received
+            $actual = $actual + LoanTransaction::where('transaction_type', 'repayment')
+                    ->where('reversed', 0)
+                    ->where('year', $d[0])
+                    ->where('month', $d[1])
+                    ->where('branch_id', session('branch_id'))
+                    ->sum('credit');
+
+            // Calculate expected payments
             foreach (Loan::select("loan_schedules.principal", "loan_schedules.interest", "loan_schedules.penalty",
-                "loan_schedules.fees")->where('loans.branch_id',
-                session('branch_id'))->whereIn('loans.status',
-                ['disbursed', 'closed', 'written_off'])->join('loan_schedules', 'loans.id', '=',
-                'loan_schedules.loan_id')->where('loan_schedules.deleted_at', NULL)->where('loan_schedules.year',
-                $d[0])->where('loan_schedules.month',
-                $d[1])->get() as $key) {
+                "loan_schedules.fees")->where('loans.branch_id', session('branch_id'))
+                         ->whereIn('loans.status', ['disbursed', 'closed', 'written_off'])
+                         ->join('loan_schedules', 'loans.id', '=', 'loan_schedules.loan_id')
+                         ->where('loan_schedules.deleted_at', NULL)
+                         ->where('loan_schedules.year', $d[0])
+                         ->where('loan_schedules.month', $d[1])
+                         ->get() as $key) {
                 $expected = $expected + $key->interest + $key->penalty + $key->fees + $key->principal;
                 $principal = $principal + $key->principal;
-
             }
-            array_push($monthly_actual_expected_data, array(
-                'month' => date_format(date_create($loop_date),
-                    'M' . ' ' . $d[0]),
+
+            array_push($monthly_actual_expected_data, [
+                'month' => date_format(date_create($loop_date), 'M' . ' ' . $d[0]),
                 'actual' => $actual,
-                'expected' => $expected
-            ));
-            array_push($monthly_disbursed_loans_data, array(
-                'month' => date_format(date_create($loop_date),
-                    'M' . ' ' . $d[0]),
+                'expected' => $expected,
+            ]);
+
+            array_push($monthly_disbursed_loans_data, [
+                'month' => date_format(date_create($loop_date), 'M' . ' ' . $d[0]),
                 'value' => $principal,
-            ));
-            //add 1 month to start date
+            ]);
+
+            // Check if the current iteration is for the current month
+            if ($d[0] == date('Y') && $d[1] == date('m')) {
+                $payments_received_current_month = $actual;
+                $expected_payments_current_month = $expected;
+            }
+
+            // add 1 month to start date
             $loop_date = date_format(date_add(date_create($loop_date),
                 date_interval_create_from_date_string('1 months')),
                 'Y-m-d');
         }
 
+// Format numbers with commas
+        $payments_received_current_month_formatted = number_format($payments_received_current_month);
+        $expected_payments_current_month_formatted = number_format($expected_payments_current_month);
+        // Calculate remaining payments
+        $remaining_payments_current_month = max(0, $expected_payments_current_month - $payments_received_current_month);
+
+// Format numbers with commas
+        $remaining_payments_current_month_formatted = number_format($remaining_payments_current_month);
+
+// Now you can add the updated description below the graph without double quotes
+
+
+
+
+
+// Now you can add the description below the graph
+        $description1 = "The graph above illustrates a detailed comparison between Payments Received and Expected Payments over time. In the current month of " . date_format(date_create($current_month), 'M Y') . ", there have been $payments_received_current_month_formatted received, while the expected payments amount to $expected_payments_current_month_formatted. This analysis reveals that there are $remaining_payments_current_month_formatted in remaining payments for this period, highlighting the financial dynamics and progress in meeting the anticipated payments.";
+
+//        $description1 = "$payments_received_current_month_formatted in " . date_format(date_create($current_month), 'M Y');
+//        $description2 = "$expected_payments_current_month_formatted in " . date_format(date_create($current_month), 'M Y');
+//        $description3 = "$remaining_payments_current_month_formatted in " . date_format(date_create($current_month), 'M Y');
+
+
+
+
+
+
         $loan_product_data = json_encode($loan_product_data);
+        $description4 = json_encode($description4);
         $monthly_net_income_data = json_encode($monthly_net_income_data);
         $monthly_borrower_data = json_encode($monthly_borrower_data);
+        $description = json_encode($description);
         $monthly_repayments_data = json_encode($monthly_repayments_data);
         $monthly_actual_expected_data = json_encode($monthly_actual_expected_data);
+        $description1 = json_encode($description1);
+
         $monthly_disbursed_loans_data = json_encode($monthly_disbursed_loans_data);
         return view('company_report.general_report',
-            compact('loan_product_data', 'monthly_net_income_data', 'monthly_borrower_data', 'monthly_repayments_data',
-                'monthly_actual_expected_data', 'monthly_disbursed_loans_data','start_date','end_date'));
+            compact('loan_product_data', 'description4', 'monthly_net_income_data', 'monthly_borrower_data', 'description', 'monthly_repayments_data',
+                'monthly_actual_expected_data', 'description1', 'monthly_disbursed_loans_data','start_date','end_date'));
     }
 
     public function journal(Request $request)
     {
         if (!Sentinel::hasAccess('reports')) {
-            Flash::warning("Permiso Denegado");
+            Flash::warning("Permission Denied");
             return redirect('/');
         }
         $start_date = $request->start_date;

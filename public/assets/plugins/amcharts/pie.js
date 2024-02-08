@@ -1,9 +1,9 @@
 (function(){
-    
+
     var h=window.AmCharts;h.AmPieChart=h.Class({inherits:h.AmSlicedChart,
-    
+
     construct:function(d){
-        
+
         this.type="pie";
         h.AmPieChart.base.construct.call(this,d);
         this.cname="AmPieChart";
@@ -12,21 +12,22 @@
         this.depth3D=0;this.startAngle=90;
         this.angle=this.innerRadius=0;
         this.startRadius="500%";
-        this.pullOutRadius="20%";
+        this.pullOutRadius="5%";
         this.labelRadius=20;
         this.labelText="[[title]]: [[percents]]%";
-        this.balloonText="[[title]]: [[percents]]% ([[value]])\n[[description]]";
+        this.balloonText=" This loan type the [[title]] got the percentage [[percents]]% with ([[value]]) borrower(s) availed. \n[[description]]";
         this.previousScale=1;
         this.adjustPrecision=!1;h.applyTheme(this,d,this.cname)},
-        
+
+
         drawChart:function(){
             h.AmPieChart.base.drawChart.call(this);
             var d=this.chartData;
             if(h.ifArray(d)){if(0<this.realWidth&&0<this.realHeight){h.VML&&(this.startAlpha=1);
-            
+
             var f=this.startDuration,c=this.container,b=this.updateWidth();
             this.realWidth=b;
-            
+
             var m=this.updateHeight();
             this.realHeight=m;
             var e=h.toCoordinate,k=e(this.marginLeft,b),a=e(this.marginRight,b),v=e(this.marginTop,m)+this.getTitleHeight(),n=e(this.marginBottom,m),y,z,g,x=h.toNumber(this.labelRadius),q=

@@ -55,6 +55,7 @@
                 </ul>
             </div>
         </div>
+
         <div class="col-md-8">
             <div class="panel panel-white">
                 <div class="panel-heading">

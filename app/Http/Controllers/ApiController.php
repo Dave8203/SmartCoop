@@ -779,7 +779,7 @@ class ApiController extends Controller
         return response()->json([
             'status' => 200,
             'loan_transaction_id' => $loan_transaction->loan_id,
-            'message' => 'Pago procesado con éxito'
+            'message' => 'Payment processed successfully'
         ], 200);
     }
 

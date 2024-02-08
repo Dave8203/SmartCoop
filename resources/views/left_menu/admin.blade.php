@@ -153,11 +153,11 @@
                             <i class="fa fa-cog"></i> <span>{{trans_choice('general.loan_parameter',1)}}</span>
                         </a>
                         <ul class="treeview-menu">
-                            <!---@if(Sentinel::hasAccess('loans.update'))
-                                <li><a href="{{ url('loan/loan_repayment_method/data') }}"><i
-                                                class="fa fa-circle-o"></i>{{trans_choice('general.payment_method',1)}}
-                                    </a></li>
-                            @endif-->
+{{--                            @if(Sentinel::hasAccess('loans.update'))--}}
+{{--                                <li><a href="{{ url('loan/loan_repayment_method/data') }}"><i--}}
+{{--                                                class="fa fa-circle-o"></i>{{trans_choice('general.payment_method',1)}}--}}
+{{--                                    </a></li>--}}
+{{--                            @endif--}}
                             @if(Sentinel::hasAccess('loans.products'))
                                 <li><a href="{{ url('loan/loan_product/data') }}"><i
                                                 class="fa fa-circle-o"></i>{{trans_choice('general.route_report',1)}}

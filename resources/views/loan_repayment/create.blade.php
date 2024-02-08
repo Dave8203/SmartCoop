@@ -45,9 +45,9 @@
                     {!! Form::text('receipt',"CD" . $loan->id . "0" . $loan->loan_product->id . date("Ymd") . date("his"), array('class' => 'form-control', 'placeholder'=>"", 'required'=>'required')) !!}
                 </div>
             </div>
-         
+
             <div class="form-group">
-                {!! Form::label('collection_date',trans_choice('general.payment_date',1),array('class'=>'col-sm-3 control-label')) !!}
+                {!! Form::label('collection_date',trans_choice('general.first_payment_date',1),array('class'=>'col-sm-3 control-label')) !!}
                 <div class="col-sm-5">
                     {!! Form::text('collection_date',date("Y-m-d"), array('class' => 'form-control date-picker', 'placeholder'=>"",'required'=>'required')) !!}
                 </div>
@@ -96,5 +96,6 @@
         {!! Form::close() !!}
     </div>
     <!-- /.box -->
+
 @endsection
 

@@ -172,6 +172,29 @@ class ClientController extends Controller
     public function storeApplication(Request $request)
     {
 
+        $loan_product = LoanProduct::find($request->loan_product_id);
+
+        // Check if the client has an active or remaining loan in the same loan window
+        $existingLoan = LoanApplication::where('borrower_id', $request->session()->get('uid'))
+            ->where('loan_product_id', $request->loan_product_id)
+            ->whereIn('status', ['pending', 'approved']) // You might need to adjust the statuses based on your logic
+            ->first();
+
+        if (!empty($existingLoan)) {
+            Flash::warning(trans('Client already has an active or pending loan in the same loan window.'));
+            return redirect()->back()->withInput();
+        }
+
+
+        if ($request->amount > $loan_product->maximum_principal) {
+            Flash::warning(trans('Loan amount is less than the maximum allowed ') . "(" . $loan_product->maximum_principal . ")");
+            return redirect()->back()->withInput();
+        }
+        if ($request->amount < $loan_product->minimum_principal) {
+            Flash::warning(trans('Loan amount is less than the minimum allowed ') . "(" . $loan_product->minimum_principal . ")");
+            return redirect()->back()->withInput();
+        }
+
         $application = new LoanApplication();
         $application->status = "pending";
         $application->loan_product_id = $request->loan_product_id;

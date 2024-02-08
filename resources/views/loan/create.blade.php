@@ -22,7 +22,7 @@
                     <i class="icon-info3" data-toggle="tooltip" title="{{trans_choice('general.select_loan_product', 1)}}"></i>
                 </div>
             </div>
-            
+
             <div class="form-group">
                 {!! Form::label('borrower_id',trans_choice('general.customer_name',1)." *",array('class'=>'col-sm-3 control-label')) !!}
                 <div class="col-sm-5">
@@ -62,13 +62,13 @@
                 {!! Form::label('loan_duration',trans_choice('general.duration',1).' '.trans_choice('general.of',1).' '.trans_choice('general.loan',1)." *",array('class'=>'col-sm-3 control-label')) !!}
                 <div class="col-sm-2">
                     {!! Form::text('loan_duration',$loan_product->default_loan_duration, array('class' => 'form-control touchspin', 'placeholder'=>"",'required'=>'required')) !!}
-                </div>                
+                </div>
                 <div class="col-sm-3">
                     {!! Form::select('loan_duration_type',array('month'=>trans_choice('general.month',1).'(s)'),$loan_product->default_loan_duration_type, array('class' => 'form-control',"id"=>"loan_duration_type",'required'=>'required')) !!}
                 </div>
                 <!---<div class="col-sm-3">
                     {!! Form::select('loan_duration_type',array('day'=>trans_choice('general.day',1).'(s)','week'=>trans_choice('general.week',1).'(s)','month'=>trans_choice('general.month',1).'(s)','year'=>trans_choice('general.year',1).'(s)'),$loan_product->default_loan_duration_type, array('class' => 'form-control',"id"=>"loan_duration_type",'required'=>'required')) !!}
-                </div>--->                
+                </div>--->
                 <div class="col-sm-3">
                 </div>
             </div>
@@ -94,7 +94,7 @@
                 {!! Form::label('interest_method',trans_choice('general.method',1).' '.trans_choice('general.interest',1)." *",array('class'=>'col-sm-3 control-label')) !!}
                 <div class="col-sm-5">
 <!---{!! Form::select('interest_method',array('flat_rate'=>trans_choice('general.flat_rate',1)),$loan_product->interest_method, array('class' => 'form-control','required'=>'required')) !!}--->
-    
+
                 {!! Form::select('interest_method',array('flat_rate'=>trans_choice('general.flat_rate',1),'declining_balance_equal_installments'=>trans_choice('general.depreciable_interest',1)),$loan_product->interest_method, array('class' => 'form-control','required'=>'required')) !!}
 
                 </div>
@@ -109,7 +109,7 @@
                 </div>
                 <!---<div class="col-sm-3">
                     {!! Form::select('interest_period',array('day'=>trans_choice('general.per_day',1),'week'=>trans_choice('general.per_week',1),'month'=>trans_choice('general.per_month',1),'year'=>trans_choice('general.per_year',1)),$loan_product->interest_period, array('class' => 'form-control', "id"=>"inputDefaultInterestPeriod",'required'=>'required')) !!}
-                </div>--->                
+                </div>--->
             </div>
             <div style="display: none;" class="form-group">
                 {!! Form::label('override_interest',trans_choice('general.override',1).' '.trans_choice('general.interest',1),array('class'=>'col-sm-3 control-label')) !!}
@@ -205,7 +205,7 @@
                 <div class="col-sm-4">
                 </div>
             </div>
-            
+
             <div class="form-group">
                 {!! Form::label('saturday', 'Include Saturday', array('class'=>'col-sm-3 control-label')) !!}
                 <div class="col-sm-1">
@@ -235,7 +235,7 @@
 <br>
 <br>
 <br>
-            
+
             <div style="display: none;" class="form-group" id="chargesDiv">
                 <div style="display: none;" id="saved_charges">
                     @foreach($loan_product->charges as $key)
